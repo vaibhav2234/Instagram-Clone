@@ -6,15 +6,19 @@ import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.cdi.Eager;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.instagram_clone.Playloads.UserDto;
+import com.instagram_clone.model.Image;
 import com.instagram_clone.model.Post;
+import com.instagram_clone.model.Requests;
 import com.instagram_clone.model.Role;
 import com.instagram_clone.model.User;
 
 @Repository
+
 public interface UserRepo extends JpaRepository<User,Long >{
 	
 	public Optional<User> findById(long id);
@@ -47,5 +51,16 @@ public interface UserRepo extends JpaRepository<User,Long >{
 	@Query("select u.roles from User u where u.id= :id")
 	public List<Role> getAllUsersRoles(long id);
 
-		
+	@Query(value="select u.requestedUsers from User u where u.id=:id")	
+    public List<Requests>getRequestesOfUserId( long id);
+	
+	@Query("Select u.followers from User u where  u.id=:id")
+	public List<UserDto> getAllFollowersById(long id);
+	
+	@Query("select u.image from User u where u.id=:id")
+	public Image getImagesByUserId(long id);
+	
+	
+	
+	
 }

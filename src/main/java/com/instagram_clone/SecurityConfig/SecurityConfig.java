@@ -1,9 +1,12 @@
 package com.instagram_clone.SecurityConfig;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.vote.ConsensusBased;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -15,12 +18,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.instagram_clone.Security.JWTConfig.JwtAuthenticationEntryPoint;
 import com.instagram_clone.Security.JWTConfig.JwtAuthenticationFilter;
 import com.instagram_clone.Security.JWTConfig.JwtHelper;
 import com.instagram_clone.UserServiceDetails.CustomUserServiceDetails;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
@@ -50,8 +58,10 @@ public class SecurityConfig {
 	{
 		http
 		.csrf((crsf)->crsf.disable())
-		.cors((cors)->cors.disable())
+		.cors((cors)->cors.configurationSource(configurationSource()))
 		.authorizeHttpRequests((auth)->auth.requestMatchers("/user/**").permitAll())
+		.authorizeHttpRequests((auth)->auth.requestMatchers("/user-image/**").permitAll())
+		.authorizeHttpRequests((auth)->auth.requestMatchers("/post/*/images").permitAll())
 		.authorizeHttpRequests((auth)->auth.requestMatchers("/login").permitAll().anyRequest().authenticated())
 		.sessionManagement((session)->session.sessionCreationPolicy( SessionCreationPolicy.STATELESS))
 		.exceptionHandling((exception)->exception.authenticationEntryPoint(authenticationEntryPoint));
@@ -79,5 +89,26 @@ public class SecurityConfig {
    {
 	   return config.getAuthenticationManager();
    }
+	
+	@Bean
+	CorsConfigurationSource configurationSource()
+	{
+		CorsConfiguration configuration =new CorsConfiguration();
+		
+		configuration.setAllowedOrigins(List.of("*"));
+		configuration.setAllowedMethods(List.of("POST","GET","PUT","OPTION","DETELE"));
+	    configuration.setMaxAge((long) 3600);
+	    configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
+	    
+	    UrlBasedCorsConfigurationSource source =new UrlBasedCorsConfigurationSource();
+	    source.registerCorsConfiguration("/**", configuration);
+		
+			
+		
+		
+		return source;
+		
+	}
+	
 
 }

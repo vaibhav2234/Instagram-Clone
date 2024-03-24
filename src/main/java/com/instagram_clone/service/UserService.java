@@ -13,7 +13,7 @@ import com.instagram_clone.model.User;
 
 public interface UserService {
 	
-	public ResponseUserDto createUser(User user) throws UserException;
+	public ResponseUserDto createUser(ResponseUserDto user) throws UserException;
 	
 	public ResponseUserDto getUserById(long id) throws UserException;
 	

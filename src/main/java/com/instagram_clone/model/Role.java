@@ -30,7 +30,7 @@ public class Role {
 	private String rolename;
 	
 	@ManyToMany(mappedBy = "roles",cascade = { CascadeType.PERSIST,CascadeType.MERGE},fetch =FetchType.EAGER )
-	//@JsonIgnore
+	@JsonIgnore
 	//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class ,property = "users")
 	Set<User>users =new HashSet<>();
 	

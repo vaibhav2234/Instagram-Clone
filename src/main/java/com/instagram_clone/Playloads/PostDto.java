@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.instagram_clone.model.Comments;
 import com.instagram_clone.model.Image;
 
@@ -39,7 +40,7 @@ public class PostDto {
 	private List<ImageDto> image;
 	
 	
-	private List<CommentDto> comments=new ArrayList(); 
+	private List<PostCommentDto> comments=new ArrayList(); 
 	
 	private Set<UserDto>likedByUsers=new HashSet<>();
 	

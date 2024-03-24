@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.instagram_clone.ExceptionHandler.RequestHandler;
 import com.instagram_clone.ExceptionHandler.UserException;
@@ -36,6 +37,7 @@ public class RequestImpl implements Request{
 	
 	
 	@Override
+	@Transactional
 	public ResponseUserDto RequestedUser(long requestUserId, long followUserId) throws UserException ,RequestHandler{
 		User requestedUser = userRepo.findById(requestUserId).orElseThrow(()-> new UserException("User not found with requestUserId : "+requestUserId));
 		User followUser = userRepo.findById(followUserId).orElseThrow(()-> new UserException(" @RequesstImpl User not found with followUserId : "+followUserId));
@@ -168,20 +170,30 @@ public class RequestImpl implements Request{
 			 logger.info("enter in the requestService 122");
 		        followUser.getRequestedUsers().add(getReq1);
 		        requestedUser.getRequestedUsers().add(getReq1);
-		        userRepo.saveAndFlush(followUser);
-		        userRepo.save(requestedUser);
-
+		        User user2 = userRepo.save(followUser);
 		        
+		        System.out.println("user2 from requestUser = " + user2.toString());
+		        User user = userRepo.save(requestedUser);
+		        ResponseUserDto userDto = mapper.map(user,ResponseUserDto.class);
+		        return userDto;
+
+		       
 		}
 		else if(getReq1.getRequestStatus().equalsIgnoreCase("followback"))
 		{
-			getReq1.setRequestStatus("requested");
-		     Requests savedRequest = requestsRepo.saveAndFlush(getReq1);
-			requestedUser.getRequestedUsers().add(savedRequest);
-			followUser.getRequestedUsers().add(savedRequest);
+			requestsRepo.delete(getReq1);
+		 
+			Requests req =new Requests(followUserId,requestUserId,"requested");
+			//getReq1.setRequestStatus("requested");
+		    // Requests savedRequest = requestsRepo.save(getReq1);
+			//requestedUser.getRequestedUsers().add(getReq1);
+			followUser.getRequestedUsers().add(req);
+			requestedUser.getRequestedUsers().add(req);
 			
-			userRepo.saveAndFlush(requestedUser);
-			userRepo.saveAndFlush(followUser);
+			userRepo.save(requestedUser);
+			
+			//userRepo.save(requestedUser);
+			userRepo.save(followUser);
 		}
 		
 		

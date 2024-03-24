@@ -1,10 +1,13 @@
 package com.instagram_clone.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
@@ -14,7 +17,10 @@ import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.MediaTypeFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,14 +36,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.instagram_clone.ExceptionHandler.PostException;
 import com.instagram_clone.ExceptionHandler.UserException;
+import com.instagram_clone.Playloads.ImageDto;
 import com.instagram_clone.Playloads.PostDto;
 import com.instagram_clone.ServiceImpl.PostServiceImpl;
 import com.instagram_clone.model.Image;
+import com.instagram_clone.model.ImageResponse;
 import com.instagram_clone.model.Post;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 public class PostController {
@@ -150,5 +158,39 @@ public class PostController {
 	   return ResponseEntity.ok()
 			   .body(postServiceImpl.unLikedPostByUser(userid, postid));
    }
+   
+   @GetMapping("/post/{id}/images")
+   public ResponseEntity<List<String>> getImagesbyPostId(@PathVariable long id) throws SQLException
+   {
+	   List<String> ImageUrls = postServiceImpl.getImageByPostId(id);
+
+	   return ResponseEntity.ok()
+			   .body(ImageUrls);
+	  
+	   
+   }
+
+   @GetMapping("user/{id}/posts/images")
+   public ResponseEntity<List<ImageDto>> getImagesPostsByUserId(@PathVariable long id) throws SQLException
+   {
+	 List<ImageDto> imagesPostsByUSerId = postServiceImpl.getImagesPostsByUserId(id);
+
+	   return ResponseEntity.ok()
+			   .body(imagesPostsByUSerId);
+	 
+	   
+   }
+
+   @GetMapping("user/{id}/posts")
+   public ResponseEntity<List<PostDto>> getPostsByUserId(@PathVariable long id) throws SQLException
+   {
+	 List<PostDto> imagesPostsByUSerId = postServiceImpl.getPostsByUserId(id);
+
+	   return ResponseEntity.ok()
+			   .body(imagesPostsByUSerId);
+	 
+	   
+   }
+  
    
 }

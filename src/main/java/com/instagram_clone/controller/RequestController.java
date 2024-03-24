@@ -35,6 +35,7 @@ public class RequestController {
 	private RequestCancelImpl cancelImpl;
 	
 	Logger logger =LoggerFactory.getLogger(RequestController.class);	
+	
 	@PutMapping("/request/requestedUser/{requestUserId}/followUser/{followUserId}")
 	public ResponseEntity<ResponseUserDto> request(@PathVariable long requestUserId ,@PathVariable long followUserId ) throws UserException, RequestHandler
 	{

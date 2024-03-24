@@ -3,6 +3,7 @@ package com.instagram_clone.model;
 import java.sql.Blob;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.instagram_clone.Playloads.UserDto;
 
 import jakarta.persistence.AttributeOverride;
@@ -55,10 +56,12 @@ public class Post {
 	
 	@OneToMany(cascade =CascadeType.ALL,fetch = FetchType.EAGER)
 	@JoinColumn(name="post_id")
+	@JsonManagedReference
 	private List<Image> image;
 	
 	@OneToMany(mappedBy = "post",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-	private List<Comments> comments=new ArrayList(); 
+	@JsonManagedReference
+	private List<Comments> comments; 
 	
 	@Embedded
 	@ElementCollection(fetch = FetchType.EAGER)

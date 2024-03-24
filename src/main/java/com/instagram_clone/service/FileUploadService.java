@@ -7,9 +7,11 @@ import javax.sql.rowset.serial.SerialException;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.instagram_clone.ExceptionHandler.ImageException;
 import com.instagram_clone.ExceptionHandler.PostException;
 import com.instagram_clone.ExceptionHandler.UserException;
 import com.instagram_clone.Playloads.PostDto;
+import com.instagram_clone.model.Image;
 
 public interface FileUploadService {
 	
@@ -17,6 +19,6 @@ public interface FileUploadService {
 	
 	public PostDto postUploadImage(long postid,MultipartFile[] file) throws PostException,IOException;
 	
-    
+    public byte[] getImageByImageName(String imageName) throws ImageException ,SQLException;
 
 }

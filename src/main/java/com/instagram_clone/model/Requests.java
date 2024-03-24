@@ -1,9 +1,12 @@
 package com.instagram_clone.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.CascadeType;
@@ -34,16 +37,13 @@ public class Requests {
 	private long followUserId;
 	
 	private String requestStatus;
-//	
-//	@ManyToOne(cascade = {CascadeType.MERGE,CascadeType.PERSIST,CascadeType.PERSIST},fetch = FetchType.EAGER)
-//	//@JsonIgnore
-//	private User user;
+
 	
 	@ManyToMany(mappedBy = "requestedUsers", cascade = {CascadeType.PERSIST,CascadeType.
-			MERGE,CascadeType.REFRESH},fetch = FetchType.EAGER)
-	//@JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class, property = "users")
+			MERGE,CascadeType.REFRESH},fetch = FetchType.LAZY)
 	
-	private Set<User> users;
+	@JsonBackReference
+	private Set<User> users =new HashSet<>();
 
 
 	public Requests(long requestUserId, long followUserId, String requestStatus) {

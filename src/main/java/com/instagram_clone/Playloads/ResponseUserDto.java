@@ -4,6 +4,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.instagram_clone.model.Role;
 
 import lombok.Data;
@@ -38,7 +41,7 @@ public class ResponseUserDto {
 	private Set<UserDto> followers;
 	
 	private Set<UserDto> followings;
-	
+
 	private Set<RequestsDto> requestedUsers;
 
 }

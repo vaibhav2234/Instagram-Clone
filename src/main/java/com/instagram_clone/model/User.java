@@ -93,16 +93,18 @@ public class User {
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns =
 	@JoinColumn(name = "story_id", referencedColumnName = "storyId"))
+	@JsonManagedReference
 	private List<Story> sotories = new ArrayList<>();
 
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinTable(joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns
-	= @JoinColumn(name = "post_id", referencedColumnName = "postId"))
+	@JoinTable(joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+	             inverseJoinColumns= @JoinColumn(name = "post_id", referencedColumnName = "postId"))
 	private List<Post> savedPost = new ArrayList<>();
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = 
 	@JoinColumn(name = "post_id", referencedColumnName = "postId"))
+	//@JsonManagedReference
 	private List<Post> posts = new ArrayList<>();
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
@@ -111,19 +113,21 @@ public class User {
 			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "roleid")
 	)
-	@JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class, property = "roles")
+	//@JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class, property = "roles")
+	@JsonIgnore
 	private Set<Role> roles = new HashSet<>();
 	
 
-	@ManyToMany(cascade= CascadeType.ALL,fetch =FetchType.EAGER)
+	@ManyToMany(cascade= CascadeType.ALL,fetch =FetchType.LAZY)
 	@JoinTable(
 			name="user_requests",
 			joinColumns = @JoinColumn(name = "userid" ,referencedColumnName ="id"),
 			inverseJoinColumns = @JoinColumn(name="reuquestid" ,referencedColumnName = "requestid")
 			
 	)
-	@JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class, property = "requestedUsers")
-	Set<Requests> requestedUsers = new HashSet<>();
+	//@JsonIgnore
+	@JsonManagedReference
+	private Set<Requests> requestedUsers = new HashSet<>();
 
 	
 }

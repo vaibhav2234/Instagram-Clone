@@ -8,5 +8,6 @@ public class ImageDto {
 	private long imageid;
 	private String imagename;
 	private String imagetype;
+	private String imagelink;
 	
 }

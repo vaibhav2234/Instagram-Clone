@@ -1,6 +1,9 @@
 package com.instagram_clone.controller;
 
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +32,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.instagram_clone.ExceptionHandler.PostException;
 import com.instagram_clone.ExceptionHandler.UserException;
 import com.instagram_clone.Playloads.PostDto;
+import com.instagram_clone.Playloads.RequestsDto;
 import com.instagram_clone.Playloads.ResponseUserDto;
 import com.instagram_clone.Playloads.UserDto;
 import com.instagram_clone.ServiceImpl.UserServiceImpl;
+import com.instagram_clone.model.Image;
 import com.instagram_clone.model.Role;
 import com.instagram_clone.model.User;
 
@@ -40,7 +45,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = {"*"},methods = {RequestMethod.POST,RequestMethod.PUT})
+@CrossOrigin(maxAge = 3600)
 public class UserController {
 	
   Logger logger =LoggerFactory.getLogger(UserController.class);	
@@ -48,10 +53,11 @@ public class UserController {
 	private  UserServiceImpl userServiceImpl;
 	
 	@PostMapping
-	public ResponseEntity<ResponseUserDto> registerUser( @Valid @RequestBody User user
-			
-			) throws UserException
+	@CrossOrigin(origins = "*" ,methods = RequestMethod.POST)
+	public ResponseEntity<ResponseUserDto> registerUser( @RequestBody ResponseUserDto user) throws UserException
 	{
+		logger.info("Enter into the UserController @resister class");
+		System.out.println("Enter into the UserConroller Class");
 	  ResponseUserDto createUser = userServiceImpl.createUser(user);
 		
 		return ResponseEntity.ok()
@@ -152,6 +158,33 @@ public class UserController {
 		
 		return ResponseEntity.ok()
 				.body(userServiceImpl.unSavedPostByUser(userid, postid));
+		
+	}
+	
+	@GetMapping("/{id}/requests")
+	public ResponseEntity<List<RequestsDto>>getRequestsOfUserId(@PathVariable long id)
+	{
+		return ResponseEntity.ok()
+				.body(userServiceImpl.getRequestsOfUserId(id));
+	}
+	
+	@GetMapping("/{id}/followers")
+	public ResponseEntity<List<UserDto>>getFollowersById(@PathVariable long id)
+	{
+		return ResponseEntity.ok()
+				.body(userServiceImpl.getFollowersById(id));
+	}
+	
+	@CrossOrigin(origins = "*" ,methods = RequestMethod.GET)
+	@GetMapping("/{userid}/image")
+	public ResponseEntity<String> getImageByUser(@PathVariable long userid) throws SQLException
+	{
+		System.out.println("enter  in the function");
+		 String image = userServiceImpl.getImageByUserId(userid);
+		
+		
+		return ResponseEntity.ok()
+				.body(image);
 		
 	}
 	

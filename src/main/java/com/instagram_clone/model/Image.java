@@ -5,6 +5,7 @@ import java.sql.Blob;
 import com.instagram_clone.Playloads.UserDto;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -32,7 +33,10 @@ public class Image {
 	private String imagename;
 	
 	@Lob
+	@Column(columnDefinition = "LONGBLOB")
 	private Blob imagecontent;
+	
+	private String imagelink;
 	
 
 	

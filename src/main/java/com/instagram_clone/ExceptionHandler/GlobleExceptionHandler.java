@@ -92,4 +92,12 @@ public class GlobleExceptionHandler {
 		
 		return new ResponseEntity<>(error ,HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler(CommentException.class)
+	public ResponseEntity<ErrorDetails>handleCommentException(CommentException ex ,WebRequest req)
+	{
+		ErrorDetails error = new ErrorDetails(ex.getMessage() ,req.getDescription(false),LocalDateTime.now());
+		
+		return new ResponseEntity<>(error ,HttpStatus.BAD_REQUEST);
+	}
 }

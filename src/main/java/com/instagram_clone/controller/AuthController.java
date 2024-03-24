@@ -11,8 +11,10 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.instagram_clone.Security.JWTConfig.JwtHelper;
@@ -21,6 +23,7 @@ import com.instagram_clone.model.AuthRequest;
 import com.instagram_clone.model.AuthResponse;
 
 @RestController
+@CrossOrigin(maxAge = 3600)
 public class AuthController {
 	
 	@Autowired
@@ -35,6 +38,7 @@ public class AuthController {
 	Logger logger =LoggerFactory.getLogger(AuthController.class);
 	
 	@PostMapping("/login")
+	@CrossOrigin(origins = "*",methods = RequestMethod.POST)
 	public ResponseEntity<AuthResponse>loginUser(@RequestBody AuthRequest authRequest)
 	{
 		authenticate(authRequest.getUsername() ,authRequest.getPassword());

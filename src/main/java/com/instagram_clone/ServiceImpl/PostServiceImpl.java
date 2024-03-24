@@ -1,8 +1,10 @@
 package com.instagram_clone.ServiceImpl;
 
 import java.io.IOException;
+import java.sql.Blob;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -14,15 +16,18 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.instagram_clone.ExceptionHandler.PostException;
 import com.instagram_clone.ExceptionHandler.UserException;
+import com.instagram_clone.Playloads.ImageDto;
 import com.instagram_clone.Playloads.PostDto;
 import com.instagram_clone.Playloads.ResponseUserDto;
 import com.instagram_clone.Playloads.UserDto;
 import com.instagram_clone.Repository.PostRepo;
 import com.instagram_clone.Repository.UserRepo;
 import com.instagram_clone.Security.JWTConfig.JwtHelper;
+import com.instagram_clone.model.Image;
 import com.instagram_clone.model.Post;
 import com.instagram_clone.model.User;
 import com.instagram_clone.service.PostService;
@@ -174,6 +179,84 @@ public class PostServiceImpl implements PostService {
 		
 		return existingPost;
 	}
+	@Override
+	public List<String> getImageByPostId(long postid) throws SQLException{
+		
+		List<Image> images = postRepo.getImagesByPostId(postid);
+		List<String>ImageUrls =new ArrayList<>();
+		
+		for(Image image : images)
+		{
+			String imageurl = ServletUriComponentsBuilder
+					.fromCurrentContextPath()
+					.path("user-image/")
+					.path(image.getImagename()).toUriString();
+			
+			ImageUrls.add(imageurl);
+		}
+		return ImageUrls;
+	}
 
+	public byte[] getBytesByBlob(Blob blob) throws SQLException
+	{
+		int blobLength =(int) blob.length();
+		byte[] bytes = blob.getBytes(1, blobLength);
+		return bytes;
+		
+	}
+	@Override
+	public List<ImageDto> getImagesPostsByUserId(long userid) {
+	        List<Image> images = postRepo.getImagesOfPostsByUserId(userid);
+	       
+	        List<ImageDto> imagesDto = images.stream().map((img)->mapper.map(img, ImageDto.class)).collect(Collectors.toList());
+		return imagesDto;
+	}
+	
+	
+	public List<PostDto> getPostsByUserId(long userid) {
+	        List<Post> posts = postRepo.getPostsByUserId(userid);
+	      
+	     List<PostDto> responseDtos =new ArrayList();
+	        List<PostDto> postDtos = posts.stream().map((post)->mapper.map(post, PostDto.class)).collect(Collectors.toList());
+	        for( PostDto postdto1 :postDtos)
+	        {
+	        	List<ImageDto> imageDto = postdto1.getImage();
+	        	 List<ImageDto> addLinkImageDto=addImageLink(new ArrayList(imageDto));
+	        	 
+	        	
+	        	 postdto1.getImage().clear();
+	       
+	       
+	         postdto1.getImage().addAll(addLinkImageDto);
+	        	
+	       
+	        	   responseDtos.add(postdto1);
+	        
+	      	
+	        }
+	        
+		return responseDtos;
+	}
+	
+	public List<ImageDto>addImageLink(List<ImageDto> imageDto)
+	{
+		
+		for(ImageDto image :imageDto)
+		{
+			String imageUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path("user-image/")
+			.path(image.getImagename()).toUriString();
+			
+			image.setImagelink(imageUrl);
+			
+			
+		}
+		//System.out.println(imageDto);
+		return imageDto;
+		
+	}
+	
+	
+	
+	
 	
 }

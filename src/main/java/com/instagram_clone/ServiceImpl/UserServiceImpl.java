@@ -1,5 +1,6 @@
 package com.instagram_clone.ServiceImpl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -14,17 +15,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.instagram_clone.AppConstant.AppConstant;
 import com.instagram_clone.ExceptionHandler.PostException;
 import com.instagram_clone.ExceptionHandler.UserException;
 import com.instagram_clone.Playloads.PostDto;
+import com.instagram_clone.Playloads.RequestsDto;
 import com.instagram_clone.Playloads.ResponseUserDto;
 import com.instagram_clone.Playloads.UserDto;
 import com.instagram_clone.Repository.PostRepo;
 import com.instagram_clone.Repository.RoleRepo;
 import com.instagram_clone.Repository.UserRepo;
+import com.instagram_clone.model.Image;
 import com.instagram_clone.model.Post;
+import com.instagram_clone.model.Requests;
 import com.instagram_clone.model.Role;
 import com.instagram_clone.model.User;
 
@@ -58,9 +64,12 @@ public class UserServiceImpl implements UserService{
 
 	Logger logger =LoggerFactory.getLogger(UserServiceImpl.class);
 	@Override
-	public ResponseUserDto createUser(User user) throws UserException {
+	public ResponseUserDto createUser(ResponseUserDto userDto) throws UserException {
 		//Role role =new Role();
 		logger.info("Enter in the Create User from UserServiceImpl@UserController");
+		 
+		User user = DtoToUser(userDto);
+		System.out.println(user.getEmail());
 		
 		 Optional<User> existingEmailWithUser = userRepo.findByEmail(user.getEmail());
 		 
@@ -88,7 +97,7 @@ public class UserServiceImpl implements UserService{
 		    }
 		 
 		 user.getRoles().add(role);
-		 
+		 System.out.println(user.toString());
 		 User savedUser = userRepo.save(user);
 		 ResponseUserDto responseUserDto = mapper.map(savedUser,ResponseUserDto.class);
 		 logger.info("User regsitored successfully");
@@ -335,4 +344,63 @@ public class UserServiceImpl implements UserService{
 		
 		return "Saved post removed successfully";
 	}
+	
+	public List<RequestsDto> getRequestsOfUserId(long id)
+	{
+		System.out.println("  enter requests list of user");
+		List<Requests> requests = userRepo.getRequestesOfUserId(id);
+		List<RequestsDto> requestDtos =new ArrayList<>();
+		for(Requests req : requests)
+		{
+			RequestsDto requestsDto =new RequestsDto();
+			requestsDto.setRequestid(req.getRequestid());
+			requestsDto.setRequestStatus(req.getRequestStatus());
+			requestsDto.setFollowUserId(req.getFollowUserId());
+			requestsDto.setRequestUserId(req.getRequestUserId());
+			requestDtos.add(requestsDto);
+		}
+		
+	//	List<RequestsDto> requestDtos =requests.stream().map((req)->mapper.map(req, RequestsDto.class)).collect(Collectors.toList());
+		
+		return requestDtos;
+	}
+	
+	public List<UserDto> getFollowersById(long id)
+	{
+		System.out.println("  enter requests list of user");
+		List<UserDto> followers = userRepo.getAllFollowersById(id);
+		
+		
+		return  followers;
+	}
+	
+	
+	public String  getImageByUserId(long id)
+	{
+		Image image= userRepo.getImagesByUserId(id);
+		
+		String path = ServletUriComponentsBuilder.fromCurrentContextPath().path("user-image/").path(image.getImagename()).toUriString();
+		
+		return path;
+	}
+	
+	public User DtoToUser(ResponseUserDto dto)
+	{
+		User user =new User();
+		
+		user.setFullname(dto.getFullName());
+		user.setEmail(dto.getEmail());
+		user.setMobile(dto.getMobile());
+		user.setPassword(dto.getPassword());
+		user.setUsername(dto.getUsername());
+		user.setAccount(dto.getAccount());
+		
+		
+		
+		
+		return user;
+		
+	}
+	
+
 }
